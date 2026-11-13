@@ -1,0 +1,25 @@
+{
+  // Workers Free: 100.000 Anfragen/Tag. Workers AI Free: 10.000 Neuronen/Tag.
+  // Beim Überschreiten gibt es Fehler, keine Rechnung. Dann greift der
+  // Vorlagen-Text in src/ai.ts, die Seite bleibt benutzbar.
+  "name": "gtm-os",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "ai": { "binding": "AI" },
+  // Bremse: rund 8 Anfragen pro Minute je Besucher. Cloudflare zählt nur
+  // ungefähr (live gemessen am 12.11.2026: von 40 schnellen Anfragen wurden 2
+  // abgewiesen). Die harte Grenze sind die Tageskontingente oben.
+  "ratelimits": [
+    { "name": "LIMITER", "namespace_id": "4711", "simple": { "limit": 8, "period": 60 } }
+  ],
+  // BOOKING_URL (optional, https) hier eintragen, wenn es einen echten
+  // Buchungslink gibt. Ohne ihn nennt kein Entwurf Termine oder Links.
+  "vars": { "AI_MODEL": "@cf/meta/llama-4-scout-17b-16e-instruct" },
+  "observability": { "enabled": false }
+}

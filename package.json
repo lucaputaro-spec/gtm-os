@@ -1,0 +1,22 @@
+{
+  "name": "gtm-os",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test:run": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src test"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261112.1",
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource-variable/instrument-sans": "^5.3.0",
+    "eslint": "^10.14.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.2",
+    "vitest": "^5.1.0",
+    "wrangler": "^4.160.1"
+  }
+}

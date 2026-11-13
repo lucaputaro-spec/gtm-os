@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How it works | Luca Putaro</title>
+<meta name="description" content="How the research, speed-to-lead and reply steps work, which parts use a language model and which do not.">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="top">
+  <a class="who" href="/">Luca Putaro</a>
+  <nav><a href="/">Back to the demo</a></nav>
+</header>
+<main>
+<article class="doc">
+  <h1>How it works</h1>
+  <p>The demo is one small program on Cloudflare Workers. It has three endpoints, one per funnel step. There is no database. Each request is answered and then forgotten. No email is sent and no CRM is written: every action, from the drafted reply to the pipeline stage, is only shown in your browser.</p>
+
+  <h2>The split that matters</h2>
+  <p>Every step separates two kinds of work.</p>
+  <ul>
+    <li><strong>Fixed rules</strong> handle what must not go wrong: which tools a site uses, how many points a lead gets, who owns it, whether a reply is an opt-out or an out-of-office note, and when a reply is too unclear to act on. Rules give the same answer every time and can be read by the sales team.</li>
+    <li><strong>A language model</strong> sorts every other reply into one of seven categories and writes the wording: the cold email, the first reply, the answer to a prospect. If the model fails or takes longer than 12 seconds, keyword matching and templates take over and the page says so.</li>
+  </ul>
+
+  <h2>Step 1: research</h2>
+  <ol>
+    <li>The input is cleaned to a plain domain. Internal addresses, IP addresses and ports are refused, so the server cannot be used to probe private networks.</li>
+    <li>The homepage is fetched once, with an honest user agent, capped at 300 KB and 7 seconds. Sites that block automated visitors return an error instead of a guess.</li>
+    <li>The page source is searched for known script addresses, such as <code>js.hs-scripts.com</code> for HubSpot. Each match is shown with the text that matched.</li>
+    <li>The visible text is searched for calls to action. “Book a demo” points to a sales-led company, “Start for free” to a product-led one.</li>
+    <li>Rules pick up to three automations from those findings.</li>
+    <li>Only then does the model write the email, from the extracted facts and nothing else.</li>
+  </ol>
+  <p>Limit: tools that load only after a cookie banner is accepted are not in the page source. Finding them needs a real browser, which is slower and costs more.</p>
+
+  <h2>Step 2: speed to lead</h2>
+  <ol>
+    <li><strong>Validate.</strong> Broken addresses and throwaway mail providers are dropped before anyone spends time on them.</li>
+    <li><strong>Enrich.</strong> For a work email, the company website is read with the same code as step 1. Personal mailboxes are skipped, because gmail.com says nothing about the sender's employer.</li>
+    <li><strong>Score.</strong> Points for a work email, a readable company site, existing sales tooling, seniority and buying language. Points off for signs that the sender is not a buyer. Every line is shown.</li>
+    <li><strong>Route.</strong> 60 points or more goes to an account executive with a five minute deadline. 35 to 59 goes to a sales development rep with one hour. Below that, a nurture sequence. The desk is picked by country domain and site language.</li>
+    <li><strong>Draft.</strong> The model writes the first reply with a goal that depends on the tier.</li>
+  </ol>
+  <p>The thresholds and point values here are examples. In a client project they come from the client's own closed deals.</p>
+
+  <h2>Step 3: reply handling</h2>
+  <ol>
+    <li>The newly written part is separated from quoted history, signatures and email footers. A “Click here to unsubscribe” line quoted from the original email is not an opt-out.</li>
+    <li>Fixed rules run on the new part first. Opt-out wording in English or German always wins, even if the rest of the message sounds friendly. Out-of-office notes pause the sequence, and the return date is extracted when it is written out.</li>
+    <li>Unclear cases go to a person: a negated opt-out (“don't unsubscribe me”), opt-out wording in the quoted conversation outside a standard footer, or no new text at all. The sequence pauses and the demo suggests no next step.</li>
+    <li>Everything else goes to the model, which sees only the new part and must choose one of seven categories. An answer outside that list is discarded.</li>
+    <li>If the model is unavailable, keyword matching takes over.</li>
+    <li>The category decides the pipeline stage, what happens to the email sequence and whether an answer is drafted at all.</li>
+  </ol>
+
+  <h2>What is stored and what reaches the model</h2>
+  <ul>
+    <li><strong>In your browser:</strong> the pipeline board, saved in local storage. It holds a card ID, the company domain or contact name, the stage, a short note, and the activity log with times. It never leaves your device. “Clear my pipeline” deletes it.</li>
+    <li><strong>On the server:</strong> nothing. Requests are answered and forgotten.</li>
+    <li><strong>Sent to the language model:</strong> for research, the domain and the public homepage text. For an inbound lead, the first name, job title and message, plus the title and description of the company site. The email address is not sent to the model. For a reply, only the newly written part. Opt-outs, out-of-office notes and replies that need a person never reach the model.</li>
+    <li><strong>Drafts promise nothing that does not exist.</strong> No draft names dates, times or a booking link unless a real booking link is configured.</li>
+  </ul>
+
+  <h2>Cost and abuse</h2>
+  <p>The page runs on free tiers with hard limits. When a limit is reached, requests fail and templates take over. No bill can occur. A rate limiter slows down visitors who send more than eight requests per minute. It is approximate by design, so the hard daily limits are the real safety net.</p>
+
+  <h2>Tests</h2>
+  <p>The rules are covered by automated tests: signal detection, scoring, routing, opt-out handling and input checks. The model's wording is not tested, which is the reason it is not allowed to decide anything.</p>
+</article>
+</main>
+<footer><p>Built by Luca Putaro on Cloudflare Workers.</p><p><a href="/">Back to the demo</a> · <a href="/imprint.html">Impressum</a> · <a href="/privacy.html">Datenschutz</a></p></footer>
+</body>
+</html>

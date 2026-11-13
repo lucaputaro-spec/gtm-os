@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Luca Putaro | Sales funnel automation, live</title>
+<meta name="description" content="Type a company website and watch three sales automations work on it: account research, speed-to-lead and reply handling, wired into one pipeline.">
+<link rel="preload" href="/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="top">
+  <a class="who" href="/">Luca Putaro</a>
+  <nav><a href="/how.html">How it works</a></nav>
+</header>
+
+<main>
+<section class="hero">
+  <h1>Give me a company.<br>I’ll run it through a sales funnel.</h1>
+  <p class="lede">I build the automations that sit between a stranger and a booked call. This page is three of them, wired together and running on real data. Start with your own company.</p>
+  <form id="research-form" class="ask" autocomplete="off">
+    <label for="domain">Company website</label>
+    <div class="ask-row">
+      <input id="domain" name="domain" type="text" inputmode="url" placeholder="yourcompany.com" required>
+      <button type="submit">Research this company</button>
+    </div>
+    <p class="hint">Reads the public homepage once. Nothing is stored.</p>
+  </form>
+</section>
+
+<nav class="line" aria-label="Funnel stages">
+  <ol>
+    <li data-stop="research"><a href="#research"><span class="dot"></span>Research</a></li>
+    <li data-stop="respond"><a href="#respond"><span class="dot"></span>Respond</a></li>
+    <li data-stop="reply"><a href="#reply"><span class="dot"></span>Sort the reply</a></li>
+    <li data-stop="pipeline"><a href="#pipeline"><span class="dot"></span>Pipeline</a></li>
+  </ol>
+</nav>
+
+<section id="research" class="stage">
+  <div class="stage-head">
+    <h2>Research an account before anyone writes to it</h2>
+    <p>Outbound works when the first line proves you looked. This step reads a homepage, finds the tools and the sales motion behind it, and picks what to pitch.</p>
+  </div>
+  <div id="research-out" class="out" aria-live="polite">
+    <p class="empty">Type a website above. The findings appear here, each with the evidence it came from.</p>
+  </div>
+</section>
+
+<section id="respond" class="stage">
+  <div class="stage-head">
+    <h2>Answer an inbound lead while it is still warm</h2>
+    <p>Now the other direction. Someone fills in a contact form. The system checks the address, looks up the company, scores the lead, picks an owner and drafts the first reply.</p>
+  </div>
+  <div class="split">
+    <form id="lead-form" class="panel" autocomplete="off">
+      <div class="presets" role="group" aria-label="Example leads">
+        <span>Try an example</span>
+        <button type="button" data-preset="hot">Ready buyer</button>
+        <button type="button" data-preset="vague">Vague request</button>
+        <button type="button" data-preset="junk">Junk</button>
+      </div>
+      <label>Name<input name="name" type="text" maxlength="80"></label>
+      <label>Email<input name="email" type="text" inputmode="email" maxlength="120" required></label>
+      <label>Job title<input name="role" type="text" maxlength="80"></label>
+      <label>Message<textarea name="message" rows="4" maxlength="800" required></textarea></label>
+      <button type="submit">Send this lead</button>
+      <p class="hint">Use made-up details if you like. Nothing is stored.</p>
+    </form>
+    <div id="lead-out" class="out" aria-live="polite">
+      <p class="empty">Send a lead. You will see every step it goes through and how long each one took.</p>
+    </div>
+  </div>
+</section>
+
+<section id="reply" class="stage">
+  <div class="stage-head">
+    <h2>Sort the answer that comes back</h2>
+    <p>Every outbound email gets one of a handful of replies. Each needs a different move. Only the newly written part counts: quoted history and email footers are set aside first. Fixed rules catch opt-outs and out-of-office notes, unclear cases go to a person, and a language model sorts the rest and drafts the answer.</p>
+  </div>
+  <div class="split">
+    <form id="reply-form" class="panel">
+      <div class="presets" role="group" aria-label="Example replies">
+        <span>Try an example</span>
+        <button type="button" data-reply="Sounds interesting. Are you free for a quick call on Thursday afternoon?">Wants a call</button>
+        <button type="button" data-reply="Thanks, but we already use a tool for this and we are happy with it.">Objection</button>
+        <button type="button" data-reply="I am out of the office until March 14 with limited access to email.">Out of office</button>
+        <button type="button" data-reply="I'm not the right person for this. Reach out to our Head of Revenue Operations.">Wrong person</button>
+        <button type="button" data-reply="Please remove me from your list.">Opt-out</button>
+        <button type="button" data-reply="Yes, Tuesday works.&#10;&#10;On Mon, Nov 9, 2026 at 10:02 Luca wrote:&#10;&gt; Would a short call next week help?&#10;&gt; Click here to unsubscribe">Yes, with quoted footer</button>
+      </div>
+      <label>Which company sent this reply?<select id="reply-card" name="card"><option value="">No company: preview only</option></select></label>
+      <label>Reply from the prospect<textarea name="text" rows="5" maxlength="1500" required></textarea></label>
+      <button type="submit">Sort this reply</button>
+    </form>
+    <div id="reply-out" class="out" aria-live="polite">
+      <p class="empty">Paste a reply or pick an example. You will see what it is, what happens next and the drafted answer.</p>
+    </div>
+  </div>
+</section>
+
+<section id="pipeline" class="stage">
+  <div class="stage-head">
+    <h2>One pipeline for all of it</h2>
+    <p>Each step above writes to the same record. That is the difference between three scripts and a system: a salesperson opens one card and sees the whole story. Click a card to pick it for the next reply. Nothing here is sent or synced to a CRM: the board shows what would happen and lives only in your browser.</p>
+  </div>
+  <div id="board" class="board"></div>
+  <ol id="log" class="log" aria-label="Activity"></ol>
+  <button id="clear" type="button" class="quiet" hidden>Clear my pipeline</button>
+</section>
+
+<section class="rules">
+  <h2>How I build these for clients</h2>
+  <dl>
+    <div><dt>Rules decide what must not go wrong.</dt><dd>Scores, owners and detected opt-outs come from fixed rules you can read and change. The language model sorts the remaining replies into one of seven categories and drafts the text. A wrong sentence is cheap, a missed opt-out is not.</dd></div>
+    <div><dt>Every score shows its reasons.</dt><dd>A salesperson who cannot see why a lead ranks first will stop trusting the ranking. Each point here comes with the line that earned it.</dd></div>
+    <div><dt>It keeps working when the model does not.</dt><dd>If the model is down or the daily budget is used up, a template takes over and the page says so. No lead waits because an API had a bad minute.</dd></div>
+    <div><dt>Speed is the product.</dt><dd>A Harvard Business Review study on online leads concluded that “most companies are not responding nearly fast enough.” <a href="https://hbr.org/2011/03/the-short-life-of-online-sales-leads">Read the study</a>. The reply above was ready in seconds.</dd></div>
+  </dl>
+</section>
+</main>
+
+<footer>
+  <p>Built by Luca Putaro on Cloudflare Workers. No database, no cookies, no tracking. No email is sent: every action is shown in your browser only.</p>
+  <p><a href="/how.html">How each step works</a> · <a href="/imprint.html">Impressum</a> · <a href="/privacy.html">Datenschutz</a></p>
+</footer>
+<script src="/app.js" defer></script>
+</body>
+</html>
